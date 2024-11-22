@@ -2,8 +2,6 @@ name: Create Releasable Package Drop
 
 on:
   push:
-    branches:
-      - release-*
     tags:
       - "v*"
 
