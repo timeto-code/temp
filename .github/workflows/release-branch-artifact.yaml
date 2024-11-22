@@ -1,0 +1,53 @@
+name: Create Releasable Package Drop
+
+on:
+  push:
+    branches:
+      - release-*
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      # - name: clean and pack tarfile
+      #   run: |
+      #     # mdkir application
+      #     # mv .next application
+      #     # mv public application
+      #     # mv package.json application
+      #     # mv package-lock.json application
+      #     # mv README.md application
+      #     tar -cvzf app.tgz .next public package.json package-lock.json README.md
+
+      # - name: Upload built tarfile
+      #   uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      #   with:
+      #     name: tgz
+      #     path: typescript.tgz
+
+      - uses: actions/create-release@v1
+        id: create_release
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - Bump version to ${{ github.ref }}
+          draft: false
+          prerelease: false
