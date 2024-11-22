@@ -1,0 +1,72 @@
+name: New Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: Release branch name to create
+        required: true
+        type: string
+      package_version:
+        description: Release package version
+        required: true
+        type: string
+      core_major_minor:
+        description: Release core major.minor version
+        required: true
+        type: string
+
+      # Inputs provided by the bot
+      distinct_id:
+        description: '(bot) A distinct ID'
+        required: false
+        default: ''
+      source_issue:
+        description: '(bot) The issue that triggered this workflow'
+        required: false
+        default: ''
+      requesting_user:
+        description: '(bot) The user who requested this workflow'
+        required: false
+        default: ''
+      status_comment:
+        description: '(bot) The comment to update with the status of this workflow'
+        required: false
+        default: ''
+
+run-name: ${{ github.workflow }}${{ inputs.distinct_id && format(' (bot run {0})', inputs.distinct_id) || '' }}
+
+# 设置 GITHUB_TOKEN 对仓库的权限。
+# permissions:
+#   contents: read
+
+# Ensure scripts are run with pipefail. See:
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none # https://github.blog/2020-12-21-get-up-to-speed-with-partial-clone-and-shallow-clone/
+          fetch-depth: 0 # Default is 1; need to set to 0 to get the benefits of blob:none.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+      - run: |
+          git checkout -b ${{ inputs.branch_name }}
+          sed -i -e 's/"version": ".*"/"version": "${{ inputs.package_version }}"/g' package.json
+          npm ci
+          npm install # update package-lock.json to ensure the version bump is included
+          git diff
+          git add package.json package-lock.json
+          git config user.email "timeto-bot@origin.com"
+          git config user.name "timeto-bot"
+          git commit -m 'Bump version to ${{ inputs.package_version }}'
+          git push --set-upstream origin ${{ inputs.branch_name }}
