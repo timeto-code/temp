@@ -1,9 +1,11 @@
-name: Create Releasable Package Drop
+name: Create Release And Upload Artifact
 
 on:
   push:
     tags:
       - "v*"
+
+run-name: ${{ github.workflow }}
 
 defaults:
   run:
