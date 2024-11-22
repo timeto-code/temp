@@ -55,3 +55,4 @@ jobs:
           git commit -m 'Bump version to ${{ inputs.package_version }}'
           git tag v${{ inputs.package_version }}
           git push --set-upstream origin ${{ inputs.branch_name }}
+          git push origin v${{ inputs.package_version }}
