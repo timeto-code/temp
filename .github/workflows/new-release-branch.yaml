@@ -17,8 +17,6 @@ run-name: ${{ github.workflow }}
 # 设置 GITHUB_TOKEN 对仓库的权限。
 # permissions:
 #   contents: write
-env:
-  GITHUB_TOKEN: ${{ secrets.MY_TOKEN}}
 
 # Ensure scripts are run with pipefail. See:
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
@@ -35,6 +33,7 @@ jobs:
         with:
           filter: blob:none # https://github.blog/2020-12-21-get-up-to-speed-with-partial-clone-and-shallow-clone/
           fetch-depth: 0 # Default is 1; need to set to 0 to get the benefits of blob:none.
+          token: ${{ secrets.MY_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
