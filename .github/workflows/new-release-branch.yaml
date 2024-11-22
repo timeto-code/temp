@@ -19,8 +19,8 @@ on:
 run-name: ${{ github.workflow }}
 
 # 设置 GITHUB_TOKEN 对仓库的权限。
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
 # Ensure scripts are run with pipefail. See:
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
@@ -42,6 +42,7 @@ jobs:
         with:
           node-version: "lts/*"
           cache: "npm"
+
       - run: |
           git checkout -b ${{ inputs.branch_name }}
           sed -i -e 's/"version": ".*"/"version": "${{ inputs.package_version }}"/g' package.json
