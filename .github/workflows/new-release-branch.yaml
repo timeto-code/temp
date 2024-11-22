@@ -11,10 +11,6 @@ on:
         description: Release package version
         required: true
         type: string
-      core_major_minor:
-        description: Release core major.minor version
-        required: true
-        type: string
 
 run-name: ${{ github.workflow }}
 
